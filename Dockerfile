@@ -30,6 +30,10 @@ COPY template /template/
 COPY conf/.docker4gis /.docker4gis
 COPY build.sh /.docker4gis/build.sh
 COPY run.sh /.docker4gis/run.sh
+# Prevent: touch: cannot touch '/tmp/conf/args': Permission denied.
+USER root
 ONBUILD COPY conf /tmp/conf
 ONBUILD RUN touch /tmp/conf/args
 ONBUILD RUN cp /tmp/conf/args /.docker4gis
+# Restore user following postgrest image.
+ONBUILD USER postgrest
