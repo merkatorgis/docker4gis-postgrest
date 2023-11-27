@@ -1,11 +1,16 @@
 FROM docker4gis/postgrest:v0.0.3
 
-# ENV PGRST_DB_POOL=100
-# ENV PGRST_DB_EXTRA_SEARCH_PATH=public
-# ENV PGRST_SERVER_HOST=*4
-# ENV PGRST_SECRET_IS_BASE64=false
-# ENV PGRST_JWT_AUD=
-# ENV PGRST_MAX_ROWS=
-# ENV PGRST_ROLE_CLAIM_KEY=".role"
-# ENV PGRST_ROOT_SPEC=
-# ENV PGRST_RAW_MEDIA_TYPES=
+ENV PGDATABASE=postgres
+ENV PGRST_DB_SCHEMAS=$DOCKER_USER
+ENV PGHOST=$DOCKER_USER-postgis
+
+# Only startup and db connection recovery messages are logged
+# ENV PGRST_LOG_LEVEL=crit
+# All the "crit" level events plus server errors (status 5xx) are logged
+ENV PGRST_LOG_LEVEL=error
+# All the "error" level events plus request errors (status 4xx) are logged
+# ENV PGRST_LOG_LEVEL=warn
+# All the "warn" level events plus all requests (every status code) are logged
+# ENV PGRST_LOG_LEVEL=info
+# Because currently there’s no buffering for logging, the levels with minimal
+# logging(crit/error) will increase throughput.
