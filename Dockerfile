@@ -1,14 +1,23 @@
-FROM postgrest/postgrest:v7.0.1
+FROM debian:bookworm-20231120
 
-ENV PGRST_DB_POOL=100 \
-    PGRST_DB_EXTRA_SEARCH_PATH=public \
-    PGRST_SERVER_HOST=*4 \
-    PGRST_SECRET_IS_BASE64=false \
+ADD conf/src/postgrest-v11.2.1-linux-static-x64.tar.xz /usr/bin
+
+ENV PGUSER="web_authenticator" \
+    PGPASSWORD="postgrest" \
+    PGRST_DB_PRE_REQUEST="public.pre_request" \
+    PGRST_DB_ANON_ROLE="web_anon" \
+    PGRST_OPENAPI_SECURITY_ACTIVE="true" \
+    PGRST_SERVER_PORT="8080"
+
+ENV PGRST_DB_EXTRA_SEARCH_PATH=public \
+    PGRST_DB_MAX_ROWS= \
+    PGRST_DB_POOL=100 \
+    PGRST_DB_ROOT_SPEC= \
     PGRST_JWT_AUD= \
-    PGRST_MAX_ROWS= \
-    PGRST_ROLE_CLAIM_KEY=".role" \
-    PGRST_ROOT_SPEC= \
-    PGRST_RAW_MEDIA_TYPES=
+    PGRST_JWT_ROLE_CLAIM_KEY=".role" \
+    PGRST_JWT_SECRET_IS_BASE64=false \
+    PGRST_RAW_MEDIA_TYPES= \
+    PGRST_SERVER_HOST=*4
 
 # Allow configuration before things start up.
 COPY conf/entrypoint /
@@ -30,10 +39,6 @@ COPY template /template/
 COPY conf/.docker4gis /.docker4gis
 COPY build.sh /.docker4gis/build.sh
 COPY run.sh /.docker4gis/run.sh
-# Prevent: touch: cannot touch '/tmp/conf/args': Permission denied.
-USER root
 ONBUILD COPY conf /tmp/conf
 ONBUILD RUN touch /tmp/conf/args
 ONBUILD RUN cp /tmp/conf/args /.docker4gis
-# Restore user following postgrest image.
-ONBUILD USER postgrest
