@@ -1,4 +1,4 @@
-FROM docker4gis/postgrest:v0.0.8
+FROM docker4gis/postgrest:v0.0.9
 
 ENV PGDATABASE=postgres
 ENV PGRST_DB_SCHEMAS=$DOCKER_USER
