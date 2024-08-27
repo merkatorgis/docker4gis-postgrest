@@ -1,1 +1,1 @@
-FROM docker4gis/postgrest:v0.0.11
+FROM docker4gis/postgrest:v0.0.12
