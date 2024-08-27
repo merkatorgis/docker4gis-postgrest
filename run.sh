@@ -11,7 +11,11 @@ VOLUME=$VOLUME
 
 mkdir -p "$FILEPORT"
 
-PGRST_JWT_SECRET=$(docker container exec "$DOCKER_USER-postgis" pg.sh force -Atc "select current_setting('app.jwt_secret')")
+PGRST_JWT_SECRET=$(
+	docker container exec "$DOCKER_USER"-postgis pg.sh \
+		force \
+		-Atc "select current_setting('app.jwt_secret')"
+)
 
 proxy=$PROXY_HOST
 [ "$PROXY_PORT" ] && proxy=$proxy:$PROXY_PORT

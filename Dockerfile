@@ -32,6 +32,12 @@ CMD ["postgrest"]
 ONBUILD ARG DOCKER_USER
 ONBUILD ENV DOCKER_USER=$DOCKER_USER
 
+ONBUILD ARG PGDATABASE
+ONBUILD ENV PGDATABASE=${PGDATABASE:-postgres}
+
+ONBUILD ENV PGHOST=$DOCKER_USER-postgis
+ONBUILD ENV PGRST_DB_SCHEMAS=$DOCKER_USER
+
 # Extension template, as required by `dg component`.
 COPY template /template/
 # Make this an extensible base component; see
