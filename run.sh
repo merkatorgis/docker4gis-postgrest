@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
 
-IMAGE=$IMAGE
-CONTAINER=$CONTAINER
-DOCKER_ENV=$DOCKER_ENV
-RESTART=$RESTART
-NETWORK=$NETWORK
-FILEPORT=$FILEPORT
-VOLUME=$VOLUME
-
 mkdir -p "$FILEPORT"
 
 PGRST_JWT_SECRET=$(
@@ -19,13 +11,13 @@ PGRST_JWT_SECRET=$(
 
 proxy=$PROXY_HOST
 [ "$PROXY_PORT" ] && proxy=$proxy:$PROXY_PORT
-PGRST_OPENAPI_SERVER_PROXY_URI=${PGRST_OPENAPI_SERVER_PROXY_URI:-https://$proxy/$DOCKER_USER/api}
+PGRST_OPENAPI_SERVER_PROXY_URI=${PGRST_OPENAPI_SERVER_PROXY_URI:-https://$proxy/$DOCKER_USER/$DOCKER_REPO}
 
 docker container run --restart "$RESTART" --name "$CONTAINER" \
-	-e DOCKER_ENV="$DOCKER_ENV" \
+	--env-file "$ENV_FILE" \
+	--env PGRST_JWT_SECRET="$PGRST_JWT_SECRET" \
+	--env PGRST_OPENAPI_SERVER_PROXY_URI="$PGRST_OPENAPI_SERVER_PROXY_URI" \
 	--mount type=bind,source="$FILEPORT",target=/fileport \
 	--mount source="$VOLUME",target=/volume \
 	--network "$NETWORK" \
-	-e PGRST_JWT_SECRET="$PGRST_JWT_SECRET" \
-	-e PGRST_OPENAPI_SERVER_PROXY_URI="$PGRST_OPENAPI_SERVER_PROXY_URI" \
-	-d "$IMAGE" postgrest "$@"
+	--detach "$IMAGE" postgrest "$@"
